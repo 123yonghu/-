@@ -1,11 +1,15 @@
 #include<Windows.h>
 #include <stdio.h>
-DWORD LoadFile(const char* fileName, LPVOID* ppfBuffer);//¼ÓÔØÎÄ¼ş
-void showPEheader(const char* fileName);//show PEÍ·
-void showSection(const char* fileName);//show ½Ú
-PIMAGE_NT_HEADERS FileToNtHeader(LPVOID pFileBuffer);//¶¨Î»NTÍ·
-LPVOID ImageBufferToFileBuffer(LPVOID pImageBuffer, DWORD FileSize);//´ÓImageBuffer×ªÎªFileBuffer
-LPVOID FileBufferToImageBuffer(LPVOID pFileBuffer);//´ÓFileBuffer×ªÎªImageBuffer
-PIMAGE_SECTION_HEADER LocateSectionBase(LPVOID pFileBuffer);//¶¨Î»µÚÒ»¸ö½ÚµÄµØÖ·
-void SaveFile(LPVOID pFileBuffer, const char* str, DWORD FileSize);//±£´æÎÄ¼ş
+DWORD LoadFile(const char* fileName, LPVOID* ppfBuffer);//åŠ è½½æ–‡ä»¶
+void showPEheader(const char* fileName);//show PEå¤´
+void showSection(const char* fileName);//show èŠ‚
+PIMAGE_NT_HEADERS FileToNtHeader(LPVOID pFileBuffer);//å®šä½NTå¤´
+LPVOID ImageBufferToFileBuffer(LPVOID pImageBuffer, DWORD FileSize);//ä»ImageBufferè½¬ä¸ºFileBuffer
+LPVOID FileBufferToImageBuffer(LPVOID pFileBuffer);//ä»FileBufferè½¬ä¸ºImageBuffer
+PIMAGE_SECTION_HEADER LocateSectionBase(LPVOID pFileBuffer);//å®šä½ç¬¬ä¸€ä¸ªèŠ‚çš„åœ°å€
+void SaveFile(LPVOID pFileBuffer, const char* str, DWORD FileSize);//ä¿å­˜æ–‡ä»¶
 DWORD RVAtoFOA(DWORD RVA, LPVOID pImageBuffer);//RVA to FOA
+BOOL AddCodeToTextSection(LPVOID* pFileBuffer, BYTE* ShellCode, DWORD ShellCodeLen);
+BOOL AddCodeToSection(DWORD iSection, LPVOID* pFileBuffer, BYTE* ShellCode, DWORD ShellCodeLen);
+DWORD ALIGNING(DWORD size, DWORD aligning);
+DWORD AddSectionAtLast(LPVOID* pFileBuffer, const CHAR* SectionName, DWORD iVirtualSize, DWORD iCharacters);
