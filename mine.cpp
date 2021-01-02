@@ -1,12 +1,12 @@
-
 #include<Windows.h>
 #include <stdio.h>
-
+#include "mine.h"
+#define MESSAGE_BOX_ADDRESS (DWORD)&MessageBox
 /*
-* ∫Ø ˝π¶ƒ‹£∫º”‘ÿŒƒº˛
-* ≤Œ ˝Àµ√˜£∫filename£∫Œƒº˛√˚
-* ∑µªÿ÷µ£∫Õ®π˝malloc∑÷≈‰µƒƒ⁄¥Êµƒ¥Û–°£¨»ÙŒﬁ∑®∑÷≈‰‘Ú∑µªÿ0
-*  π”√∏√∫Ø ˝∫Û–Ë“™µ˜”√free£®£©∫Ø ˝ Õ∑≈∂—ø’º‰
+* ÂáΩÊï∞ÂäüËÉΩÔºöÂä†ËΩΩÊñá‰ª∂
+* ÂèÇÊï∞ËØ¥ÊòéÔºöfilenameÔºöÊñá‰ª∂Âêç
+* ËøîÂõûÂÄºÔºöÈÄöËøámallocÂàÜÈÖçÁöÑÂÜÖÂ≠òÁöÑÂ§ßÂ∞èÔºåËã•Êó†Ê≥ïÂàÜÈÖçÂàôËøîÂõû0
+* ‰ΩøÁî®ËØ•ÂáΩÊï∞ÂêéÈúÄË¶ÅË∞ÉÁî®freeÔºàÔºâÂáΩÊï∞ÈáäÊîæÂ†ÜÁ©∫Èó¥
 */
 DWORD LoadFile(const char* fileName, LPVOID* ppfBuffer)
 {
@@ -27,7 +27,7 @@ DWORD LoadFile(const char* fileName, LPVOID* ppfBuffer)
 		printf("cannot malloc");
 		return 0;
 	}
-		
+
 	memset(*ppfBuffer, 0, FileSize);
 	fread(*ppfBuffer, FileSize, 1, fp);
 	if (fclose(fp) != 0)
@@ -38,10 +38,10 @@ DWORD LoadFile(const char* fileName, LPVOID* ppfBuffer)
 	return FileSize;
 
 	/*
-	* ∫Ø ˝π¶ƒ‹£∫¥Ú”°PEÕ∑–≈œ¢
-	* ≤Œ ˝Àµ√˜£∫filename£∫Œƒº˛√˚
-	* ∑µªÿ÷µ£∫Œﬁ
-	* 
+	* ÂáΩÊï∞ÂäüËÉΩÔºöÊâìÂç∞PEÂ§¥‰ø°ÊÅØ
+	* ÂèÇÊï∞ËØ¥ÊòéÔºöfilenameÔºöÊñá‰ª∂Âêç
+	* ËøîÂõûÂÄºÔºöÊó†
+	*
 	*/
 }
 void showPEheader(const char* fileName)
@@ -53,40 +53,40 @@ void showPEheader(const char* fileName)
 	PIMAGE_OPTIONAL_HEADER pOptionalHeader = NULL;
 	PIMAGE_SECTION_HEADER pSectionHeader = NULL;
 
-	 LoadFile(fileName,&pFileBuffer);
+	LoadFile(fileName, &pFileBuffer);
 	if (pFileBuffer == NULL)
 	{
 		printf("cannot open file");
 		exit(EXIT_FAILURE);
 	}
-	//≈–∂œ «∑ÒŒ™MZ
+	//Âà§Êñ≠ÊòØÂê¶‰∏∫MZ
 	if (*((PWORD)pFileBuffer) != IMAGE_DOS_SIGNATURE)
 	{
-		printf("≤ª «”––ßµƒMZ±Í÷æ");
+		printf("‰∏çÊòØÊúâÊïàÁöÑMZÊ†áÂøó");
 		free(pFileBuffer);
 		return;
 	}
 	pDosHeader = (PIMAGE_DOS_HEADER)pFileBuffer;
 	printf("***********DOS Header**********\n");
-	printf("pDosHeader->e_magic	MZ ±Í÷æ:%x\n", pDosHeader->e_magic);
-	printf("pDosHeader->e_lfanew	PE ∆´“∆:%x\n", pDosHeader->e_lfanew);
-	//≈–∂œPE∆´“∆ «∑Ò”––ß
+	printf("pDosHeader->e_magic	MZ Ê†áÂøó:%x\n", pDosHeader->e_magic);
+	printf("pDosHeader->e_lfanew	PE ÂÅèÁßª:%x\n", pDosHeader->e_lfanew);
+	//Âà§Êñ≠PEÂÅèÁßªÊòØÂê¶ÊúâÊïà
 	if (*(PDWORD)((DWORD)pFileBuffer + pDosHeader->e_lfanew) != IMAGE_NT_SIGNATURE)
 	{
-		printf("≤ª «”––ßµƒPE±Í÷æ");
+		printf("‰∏çÊòØÊúâÊïàÁöÑPEÊ†áÂøó");
 		free(pFileBuffer);
 		return;
 	}
 	pNtHeaders = (PIMAGE_NT_HEADERS)((BYTE*)pFileBuffer + pDosHeader->e_lfanew);
 	printf("*********NT Header**************\n");
-	printf("pNtHeaders->Signature	PE ±Í÷æ :%x\n", pNtHeaders->Signature);
+	printf("pNtHeaders->Signature	PE Ê†áÂøó :%x\n", pNtHeaders->Signature);
 	puts("*********PE Header**************");
-	printf("FileHeader.Machine		CPU∆ΩÃ®:%x\n", pNtHeaders->FileHeader.Machine);
-	printf("pNtHeaders->FileHeader.NumberOfSections	PEŒƒº˛÷–«¯øÈ ˝¡ø:%x\n", pNtHeaders->FileHeader.NumberOfSections);
-	printf("pNtHeaders->FileHeader.Characteristics		(√Ë ˆŒƒº˛ Ù–‘£©:%x\n", pNtHeaders->FileHeader.Characteristics);
+	printf("FileHeader.Machine		CPUÂπ≥Âè∞:%x\n", pNtHeaders->FileHeader.Machine);
+	printf("pNtHeaders->FileHeader.NumberOfSections	PEÊñá‰ª∂‰∏≠Âå∫ÂùóÊï∞Èáè:%x\n", pNtHeaders->FileHeader.NumberOfSections);
+	printf("pNtHeaders->FileHeader.Characteristics		(ÊèèËø∞Êñá‰ª∂Â±ûÊÄßÔºâ:%x\n", pNtHeaders->FileHeader.Characteristics);
 	puts("*********Optional PE Header**************");
-	printf("pNtHeaders->OptionalHeader.Magic	ø…—°PEÕ∑ª√ ˝£∫%x\n", pNtHeaders->OptionalHeader.Magic);
-	printf("pNtHeaders->OptionalHeader.AddressOfEntryPoint		:OEP≥Ã–Ú»Îø⁄µ„ %x\n", pNtHeaders->OptionalHeader.AddressOfEntryPoint);
+	printf("pNtHeaders->OptionalHeader.Magic	ÂèØÈÄâPEÂ§¥ÂπªÊï∞Ôºö%x\n", pNtHeaders->OptionalHeader.Magic);
+	printf("pNtHeaders->OptionalHeader.AddressOfEntryPoint		:OEPÁ®ãÂ∫èÂÖ•Âè£ÁÇπ %x\n", pNtHeaders->OptionalHeader.AddressOfEntryPoint);
 	printf("ImageBase      	:%x\n", pNtHeaders->OptionalHeader.ImageBase);
 
 
@@ -99,15 +99,15 @@ void showPEheader(const char* fileName)
 	return;
 }
 /*
-	* ∫Ø ˝π¶ƒ‹£∫¥Ú”°À˘”–Ω⁄–≈œ¢
-	* ≤Œ ˝Àµ√˜£∫filename£∫Œƒº˛√˚
-	* ∑µªÿ÷µ£∫Œﬁ
+	* ÂáΩÊï∞ÂäüËÉΩÔºöÊâìÂç∞ÊâÄÊúâËäÇ‰ø°ÊÅØ
+	* ÂèÇÊï∞ËØ¥ÊòéÔºöfilenameÔºöÊñá‰ª∂Âêç
+	* ËøîÂõûÂÄºÔºöÊó†
 	*
 	*/
 void showSection(const char* fileName)
 {
 	LPVOID pFileBuffer = NULL;
-	LoadFile(fileName,&pFileBuffer);
+	LoadFile(fileName, &pFileBuffer);
 	PIMAGE_SECTION_HEADER pSectionHeader = NULL;
 	if (pFileBuffer == NULL)
 	{
@@ -122,7 +122,7 @@ void showSection(const char* fileName)
 	pNtHeader = (PIMAGE_NT_HEADERS)(pDosHeader->e_lfanew + (BYTE*)pFileBuffer);
 	if (pNtHeader->Signature != IMAGE_NT_SIGNATURE)
 	{
-		printf("≤ª «±Í◊ºµƒPEŒƒº˛");
+		printf("‰∏çÊòØÊ†áÂáÜÁöÑPEÊñá‰ª∂");
 		return;
 	}
 
@@ -154,23 +154,23 @@ void showSection(const char* fileName)
 	return;
 }
 /*
-	* ∫Ø ˝π¶ƒ‹£∫—∞’“DOSÕ∑
-	* ≤Œ ˝Àµ√˜£∫pFileBuffer£∫Œƒº˛ª∫≥Â÷∏’Î
-	* ∑µªÿ÷µ£∫DOSÕ∑÷∏’Î
-	*◊¢“‚£∫Œﬁ
+	* ÂáΩÊï∞ÂäüËÉΩÔºöÂØªÊâæDOSÂ§¥
+	* ÂèÇÊï∞ËØ¥ÊòéÔºöpFileBufferÔºöÊñá‰ª∂ÁºìÂÜ≤ÊåáÈíà
+	* ËøîÂõûÂÄºÔºöDOSÂ§¥ÊåáÈíà
+	*Ê≥®ÊÑèÔºöÊó†
 	*/
 PIMAGE_DOS_HEADER FileToDosHeader(LPVOID pFileBuffer)
 {
 	PIMAGE_DOS_HEADER pDosHeader = NULL;
 	if (pFileBuffer == NULL)
 	{
-		printf("≤ªΩ” ‹NULL");
+		printf("‰∏çÊé•ÂèóNULL");
 		return NULL;
 	}
-	//ºÏ≤‚MZÕ∑
+	//Ê£ÄÊµãMZÂ§¥
 	if (*((WORD*)pFileBuffer) != IMAGE_DOS_SIGNATURE)
 	{
-		printf("≤ª «±Í◊ºMZÕ∑£°");
+		printf("‰∏çÊòØÊ†áÂáÜMZÂ§¥ÔºÅ");
 		return NULL;
 	}
 	pDosHeader = (PIMAGE_DOS_HEADER)pFileBuffer;
@@ -180,10 +180,10 @@ PIMAGE_DOS_HEADER FileToDosHeader(LPVOID pFileBuffer)
 
 
 /*
-∫Ø ˝π¶ƒ‹£∫Ω” ‹Œƒº˛ª∫≥Â«¯÷∏’Î£¨∑µªÿNTÕ∑÷∏’Î
-≤Œ ˝£∫Œƒº˛ª∫≥Â«¯÷∏’Î
-∑µªÿ÷µ£∫»Áπ˚º¯±≥ˆ∑˚∫œ±Í◊ºPEŒƒº˛£¨∑µªÿNTÕ∑£¨∑Ò‘Ú∑µªÿNULL
-◊¢“‚£∫Œﬁ
+ÂáΩÊï∞ÂäüËÉΩÔºöÊé•ÂèóÊñá‰ª∂ÁºìÂÜ≤Âå∫ÊåáÈíàÔºåËøîÂõûNTÂ§¥ÊåáÈíà
+ÂèÇÊï∞ÔºöÊñá‰ª∂ÁºìÂÜ≤Âå∫ÊåáÈíà
+ËøîÂõûÂÄºÔºöÂ¶ÇÊûúÈâ¥Âà´Âá∫Á¨¶ÂêàÊ†áÂáÜPEÊñá‰ª∂ÔºåËøîÂõûNTÂ§¥ÔºåÂê¶ÂàôËøîÂõûNULL
+Ê≥®ÊÑèÔºöÊó†
 */
 PIMAGE_NT_HEADERS FileToNtHeader(LPVOID pFileBuffer)
 {
@@ -191,30 +191,30 @@ PIMAGE_NT_HEADERS FileToNtHeader(LPVOID pFileBuffer)
 	PIMAGE_NT_HEADERS pNtHeaders = NULL;
 	if (pFileBuffer == NULL)
 	{
-		printf("FileToNtHeader∫Ø ˝≤ªΩ” ‹NULL");
+		printf("FileToNtHeaderÂáΩÊï∞‰∏çÊé•ÂèóNULL");
 		return NULL;
 	}
-	//ºÏ≤‚MZÕ∑
+	//Ê£ÄÊµãMZÂ§¥
 	if (*((WORD*)pFileBuffer) != IMAGE_DOS_SIGNATURE)
 	{
-		printf("≤ª «±Í◊ºMZÕ∑£°");
+		printf("‰∏çÊòØÊ†áÂáÜMZÂ§¥ÔºÅ");
 		return NULL;
 	}
-	pDosHeader=(PIMAGE_DOS_HEADER)pFileBuffer;
-	//ºÏ≤‚PE«©√˚
+	pDosHeader = (PIMAGE_DOS_HEADER)pFileBuffer;
+	//Ê£ÄÊµãPEÁ≠æÂêç
 	if (*(DWORD*)(pDosHeader->e_lfanew + (BYTE*)pFileBuffer) != IMAGE_NT_SIGNATURE)
 	{
-		printf("≤ª «±Í◊ºNTÕ∑£°");
+		printf("‰∏çÊòØÊ†áÂáÜNTÂ§¥ÔºÅ");
 		return NULL;
 	}
 	pNtHeaders = (PIMAGE_NT_HEADERS)(pDosHeader->e_lfanew + (BYTE*)pFileBuffer);
 	return pNtHeaders;
 }
 /*
-∫Ø ˝π¶ƒ‹£∫Ω” ‹Œƒº˛ª∫≥Â«¯÷∏’Î£¨∑µªÿµ⁄“ª∏ˆΩ⁄±Ìµƒµÿ÷∑
-≤Œ ˝£∫Œƒº˛ª∫≥Â«¯÷∏’Î
-∑µªÿ÷µ£∫»Áπ˚º¯±≥ˆ∑˚∫œ±Í◊ºPEŒƒº˛£¨∑µªÿµ⁄“ª∏ˆΩ⁄±Ìµƒµÿ÷∑£¨∑Ò‘Ú∑µªÿNULL
-◊¢“‚£∫Œﬁ
+ÂáΩÊï∞ÂäüËÉΩÔºöÊé•ÂèóÊñá‰ª∂ÁºìÂÜ≤Âå∫ÊåáÈíàÔºåËøîÂõûÁ¨¨‰∏Ä‰∏™ËäÇË°®ÁöÑÂú∞ÂùÄ
+ÂèÇÊï∞ÔºöÊñá‰ª∂ÁºìÂÜ≤Âå∫ÊåáÈíà
+ËøîÂõûÂÄºÔºöÂ¶ÇÊûúÈâ¥Âà´Âá∫Á¨¶ÂêàÊ†áÂáÜPEÊñá‰ª∂ÔºåËøîÂõûÁ¨¨‰∏Ä‰∏™ËäÇË°®ÁöÑÂú∞ÂùÄÔºåÂê¶ÂàôËøîÂõûNULL
+Ê≥®ÊÑèÔºöÊó†
 */
 PIMAGE_SECTION_HEADER LocateSectionBase(LPVOID pFileBuffer)
 {
@@ -223,25 +223,25 @@ PIMAGE_SECTION_HEADER LocateSectionBase(LPVOID pFileBuffer)
 	PIMAGE_SECTION_HEADER pSectionHeaderBase = NULL;
 	if (pFileBuffer == NULL)
 	{
-		printf("≤ªΩ” ‹NULL");
+		printf("‰∏çÊé•ÂèóNULL");
 		return NULL;
 	}
-	//ºÏ≤‚MZÕ∑
+	//Ê£ÄÊµãMZÂ§¥
 	if (*((WORD*)pFileBuffer) != IMAGE_DOS_SIGNATURE)
 	{
-		printf("≤ª «±Í◊ºMZÕ∑£°");
+		printf("‰∏çÊòØÊ†áÂáÜMZÂ§¥ÔºÅ");
 		return NULL;
 	}
 	pDosHeader = (PIMAGE_DOS_HEADER)pFileBuffer;
-	//ºÏ≤‚PE«©√˚
+	//Ê£ÄÊµãPEÁ≠æÂêç
 	if (*(DWORD*)(pDosHeader->e_lfanew + (BYTE*)pFileBuffer) != IMAGE_NT_SIGNATURE)
 	{
-		printf("≤ª «±Í◊ºNTÕ∑£°");
+		printf("‰∏çÊòØÊ†áÂáÜNTÂ§¥ÔºÅ");
 		return NULL;
 	}
 	pNtHeaders = (PIMAGE_NT_HEADERS)(pDosHeader->e_lfanew + (BYTE*)pFileBuffer);
-	pSectionHeaderBase = (PIMAGE_SECTION_HEADER)((BYTE*)pFileBuffer+pDosHeader->e_lfanew+sizeof(DWORD)\
-		+sizeof(IMAGE_FILE_HEADER)+pNtHeaders->FileHeader.SizeOfOptionalHeader);
+	pSectionHeaderBase = (PIMAGE_SECTION_HEADER)((BYTE*)pFileBuffer + pDosHeader->e_lfanew + sizeof(DWORD)\
+		+ sizeof(IMAGE_FILE_HEADER) + pNtHeaders->FileHeader.SizeOfOptionalHeader);
 	return pSectionHeaderBase;
 }
 
@@ -250,10 +250,10 @@ PIMAGE_SECTION_HEADER LocateSectionBase(LPVOID pFileBuffer)
 
 
 /*
- ∫Ø ˝π¶ƒ‹£∫FileBufferToImageBuffer
-≤Œ ˝Àµ√˜£∫pFileBuffer£∫Œƒº˛ª∫≥Â÷∏’Î
-∑µªÿ÷µ£∫ƒ⁄¥Ê”≥œÒ÷∏’Î
-◊¢“‚£∫Œﬁ
+ ÂáΩÊï∞ÂäüËÉΩÔºöFileBufferToImageBuffer
+ÂèÇÊï∞ËØ¥ÊòéÔºöpFileBufferÔºöÊñá‰ª∂ÁºìÂÜ≤ÊåáÈíà
+ËøîÂõûÂÄºÔºöÂÜÖÂ≠òÊò†ÂÉèÊåáÈíà
+Ê≥®ÊÑèÔºöÁî®ÂÆåËÆ∞ÂæófreeÔºàÔºâÂì¶
 */
 LPVOID FileBufferToImageBuffer(LPVOID pFileBuffer)
 {
@@ -272,12 +272,12 @@ LPVOID FileBufferToImageBuffer(LPVOID pFileBuffer)
 	pNtHeaders = FileToNtHeader(pFileBuffer);
 	if (pNtHeaders == NULL)
 	{
-		printf("NTÕ∑Œ™ø’£°\n");
+		printf("NTÂ§¥‰∏∫Á©∫ÔºÅ\n");
 		return NULL;
 	}
 	SizeOfImage = pNtHeaders->OptionalHeader.SizeOfImage;
 	SizeOfHeaders = pNtHeaders->OptionalHeader.SizeOfHeaders;
-	NumberOfSections=pNtHeaders->FileHeader.NumberOfSections;
+	NumberOfSections = pNtHeaders->FileHeader.NumberOfSections;
 	pSectionHeaderBase = LocateSectionBase(pFileBuffer);
 
 	pImageBuffer = malloc(SizeOfImage);
@@ -294,29 +294,34 @@ LPVOID FileBufferToImageBuffer(LPVOID pFileBuffer)
 	{
 		PIMAGE_SECTION_HEADER pSectionHeader = (PIMAGE_SECTION_HEADER)\
 			((BYTE*)pSectionHeaderBase + sizeof(IMAGE_SECTION_HEADER) * i);
-		memcpy((BYTE*)pImageBuffer+ pSectionHeader->VirtualAddress,
-			(BYTE*)pFileBuffer+pSectionHeader->PointerToRawData,
+		memcpy((BYTE*)pImageBuffer + pSectionHeader->VirtualAddress,
+			(BYTE*)pFileBuffer + pSectionHeader->PointerToRawData,
 			pSectionHeader->SizeOfRawData);
 	}
 	return pImageBuffer;
 }
 /*
-∫Ø ˝π¶ƒ‹£∫ImageBufferToFileBuffer
-≤Œ ˝Àµ√˜£∫pImageBuffer£∫ƒ⁄¥Ê”≥œÒ÷∏’Î,FileSize£∫‘≠FileBuffer¥Û–°
-∑µªÿ÷µ£∫pFileBuffer
-◊¢“‚£∫Œﬁ
+ÂáΩÊï∞ÂäüËÉΩÔºöImageBufferToFileBuffer
+ÂèÇÊï∞ËØ¥ÊòéÔºöpImageBufferÔºöÂÜÖÂ≠òÊò†ÂÉèÊåáÈíà
+ËøîÂõûÂÄºÔºöpFileBuffer
+Ê≥®ÊÑèÔºöËÆ∞ÂæófreeÔºàÔºâÂì¶
 */
-LPVOID ImageBufferToFileBuffer(LPVOID pImageBuffer,DWORD FileSize)
+LPVOID ImageBufferToFileBuffer(LPVOID pImageBuffer)
 {
 	PIMAGE_NT_HEADERS pNtHeaders = FileToNtHeader(pImageBuffer);
+	DWORD FileSize = 0;
+	PIMAGE_SECTION_HEADER SectionBase = NULL;
+	DWORD NumberOfSections = 0;
 	if (pNtHeaders == NULL)
 	{
 		printf("error");
 		exit(0);
 	}
-
-	PIMAGE_SECTION_HEADER SectionBase = NULL;
-	DWORD NumberOfSections = 0;
+	SectionBase = LocateSectionBase(pImageBuffer);
+	NumberOfSections = pNtHeaders->FileHeader.NumberOfSections;
+	PIMAGE_SECTION_HEADER pLastSection = (PIMAGE_SECTION_HEADER)\
+		((BYTE*)SectionBase + (NumberOfSections - 1) * sizeof(IMAGE_SECTION_HEADER));
+	FileSize = pLastSection->SizeOfRawData + pLastSection->PointerToRawData;
 	LPVOID pFileBuffer = malloc(FileSize);
 	if (pFileBuffer == NULL)
 	{
@@ -326,29 +331,28 @@ LPVOID ImageBufferToFileBuffer(LPVOID pImageBuffer,DWORD FileSize)
 	memset(pFileBuffer, 0, FileSize);
 	memcpy(pFileBuffer, pImageBuffer, pNtHeaders->OptionalHeader.SizeOfHeaders);
 
-	SectionBase = LocateSectionBase(pImageBuffer);
-	NumberOfSections = pNtHeaders->FileHeader.NumberOfSections;
+
 
 	for (size_t i = 0; i < NumberOfSections; i++)
 	{
-		PIMAGE_SECTION_HEADER pSectionHeader =(PIMAGE_SECTION_HEADER)\
-			((BYTE*) SectionBase + i * sizeof(IMAGE_SECTION_HEADER));
+		PIMAGE_SECTION_HEADER pSectionHeader = (PIMAGE_SECTION_HEADER)\
+			((BYTE*)SectionBase + i * sizeof(IMAGE_SECTION_HEADER));
 		memcpy((BYTE*)pFileBuffer + pSectionHeader->PointerToRawData,
 			(BYTE*)pImageBuffer + pSectionHeader->VirtualAddress,
 			pSectionHeader->SizeOfRawData);
 	}
 
-	printf("ImageBufferToFileBuffer end\n");
+
 	return pFileBuffer;
 
 }
 /*
-∫Ø ˝π¶ƒ‹£∫¥”pFilBuffer÷∏œÚµƒµÿ÷∑ø™ º£¨FileSize¥Û–°µƒ ˝æ›±£¥Ê”⁄str÷∏∂®µƒæ¯∂‘µÿ÷∑÷–
-≤Œ ˝£∫Œƒº˛ª∫≥Â÷∏’Î£¨Ω´±£¥ÊŒƒº˛µƒæ¯∂‘µÿ÷∑£¨Œƒº˛¥Û–°
-∑µªÿ÷µ£∫Œﬁ
-◊¢“‚£∫Œﬁ
+ÂáΩÊï∞ÂäüËÉΩÔºö‰ªépFilBufferÊåáÂêëÁöÑÂú∞ÂùÄÂºÄÂßãÔºåFileSizeÂ§ßÂ∞èÁöÑÊï∞ÊçÆ‰øùÂ≠ò‰∫éstrÊåáÂÆöÁöÑÁªùÂØπÂú∞ÂùÄ‰∏≠
+ÂèÇÊï∞ÔºöÊñá‰ª∂ÁºìÂÜ≤ÊåáÈíàÔºåÂ∞Ü‰øùÂ≠òÊñá‰ª∂ÁöÑÁªùÂØπÂú∞ÂùÄÔºåÊñá‰ª∂Â§ßÂ∞è
+ËøîÂõûÂÄºÔºöÊó†
+Ê≥®ÊÑèÔºöÊó†
 */
-void SaveFile(LPVOID pFileBuffer,const char* str,DWORD FileSize)
+void SaveFile(LPVOID pFileBuffer, const char* str, DWORD FileSize)
 {
 	FILE* fp;
 	fopen_s(&fp, str, "wb");
@@ -357,7 +361,7 @@ void SaveFile(LPVOID pFileBuffer,const char* str,DWORD FileSize)
 		printf("cannot open %s", str);
 		return;
 	}
-	fwrite(pFileBuffer,FileSize ,1,fp);
+	fwrite(pFileBuffer, FileSize, 1, fp);
 	if (fclose(fp) != 0)
 	{
 		printf("cannot close %s", str);
@@ -366,34 +370,280 @@ void SaveFile(LPVOID pFileBuffer,const char* str,DWORD FileSize)
 	return;
 }
 /*
-∫Ø ˝π¶ƒ‹£∫◊™ªªRVAŒ™FOA£¨∑µªÿ÷Æ
-≤Œ ˝£∫RVA£¨ƒ⁄¥Ê”≥œÒ÷∏’Î
-∑µªÿ÷µ£∫FOA£¨◊™ªª ß∞‹‘Ú∑µªÿ-1
-◊¢“‚£∫Œﬁ
+ÂáΩÊï∞ÂäüËÉΩÔºöËΩ¨Êç¢RVA‰∏∫FOAÔºåËøîÂõû‰πã
+ÂèÇÊï∞ÔºöRVAÔºåÂÜÖÂ≠òÊò†ÂÉèÊåáÈíà
+ËøîÂõûÂÄºÔºöFOAÔºåËΩ¨Êç¢Â§±Ë¥•ÂàôËøîÂõû-1
+Ê≥®ÊÑèÔºöÊó†
 */
-DWORD RVAtoFOA(DWORD RVA,LPVOID pImageBuffer)
+DWORD RVAtoFOA(DWORD RVA, LPVOID pImageBuffer)
 {
 	PIMAGE_NT_HEADERS pNtHeaders = FileToNtHeader(pImageBuffer);
 	PIMAGE_SECTION_HEADER SectionBase = LocateSectionBase(pImageBuffer);
 	WORD NumberOfSection = 0;
-	if (pNtHeaders == NULL||SectionBase==NULL)
+	if (pNtHeaders == NULL || SectionBase == NULL)
 	{
-		printf("Œﬁ∑®’“µΩ÷∏’Î÷∏œÚµƒNTÕ∑ªÚΩ⁄±Ìª˘÷∑");
+		printf("Êó†Ê≥ïÊâæÂà∞ÊåáÈíàÊåáÂêëÁöÑNTÂ§¥ÊàñËäÇË°®Âü∫ÂùÄ");
 		return -1;
 	}
-	NumberOfSection=pNtHeaders->FileHeader.NumberOfSections;
+	NumberOfSection = pNtHeaders->FileHeader.NumberOfSections;
 	for (size_t i = 0; i < NumberOfSection; i++)
 	{
 		PIMAGE_SECTION_HEADER pSectionHeader = (PIMAGE_SECTION_HEADER)\
 			((BYTE*)SectionBase + i * sizeof(IMAGE_SECTION_HEADER));
 		PIMAGE_SECTION_HEADER pNextSectionHeader = (PIMAGE_SECTION_HEADER)\
-			((BYTE*)SectionBase + (i+1) * sizeof(IMAGE_SECTION_HEADER));
+			((BYTE*)SectionBase + (i + 1) * sizeof(IMAGE_SECTION_HEADER));
 		if (i == NumberOfSection - 1)
 			return RVA - pSectionHeader->VirtualAddress + pSectionHeader->PointerToRawData;
-		else if (RVA > pSectionHeader->VirtualAddress && RVA<pNextSectionHeader->VirtualAddress)
+		else if (RVA > pSectionHeader->VirtualAddress && RVA < pNextSectionHeader->VirtualAddress)
 			return RVA - pSectionHeader->VirtualAddress + pSectionHeader->PointerToRawData;
 	}
 	return 0;
 
 
+}
+/*
+ÂáΩÊï∞ÂäüËÉΩÔºöÂú®‰ª£Á†ÅËäÇÊ∑ªÂä†shellcode
+ÂèÇÊï∞ÔºöpFileBufferÔºöÊñá‰ª∂ÁºìÂÜ≤Âå∫ÊåáÈíà,ShellCode:‰ª•Â≠óËäÇ‰∏∫Âçï‰Ωç
+ÁöÑ16ËøõÂà∂shellcodeÔºåShellCodeLenÔºöShellCodeÈïøÂ∫¶
+ËøîÂõûÂÄºÔºöÊàêÂäüÊ∑ªÂä†ÂàôËøîÂõû1ÔºåÂê¶ÂàôËøîÂõû0
+Ê≥®ÊÑè:Ê≠§ÂáΩÊï∞ÂÅáÂÆöÁ¨¨‰∏Ä‰∏™ËäÇÂ∞±ÊòØ‰ª£Á†ÅÂå∫,‰∏îÊ≠§ÂáΩÊï∞‰ΩøÁî®Â§ö‰∏™ÂÖ∂‰ªñÂÜÖÁΩÆÂáΩÊï∞
+Âè¶Â§ñÈªòËÆ§shellcodeÊúÄÂêé‰∏∫E9 00 00 00 00 E8 00 00 00 00
+*/
+BOOL AddCodeToTextSection(LPVOID* pFileBuffer, BYTE* ShellCode, DWORD ShellCodeLen)
+{
+	PIMAGE_NT_HEADERS pNtHeaders = NULL;
+	PIMAGE_SECTION_HEADER pTextSectionHeader = NULL;
+	PIMAGE_SECTION_HEADER pSecondSectionHeader = NULL;
+	LPVOID pImageBuffer = NULL;
+	DWORD OrigionalOEP = 0;
+	int iShellCodeBaseAddress = 0;
+	long Offset = 0;
+	if (*pFileBuffer == NULL)
+	{
+		printf("AddCodeToTextSectionÂáΩÊï∞‰∏çÊé•ÂèóNULLÔºÅ");
+		return 0;
+	}
+	pNtHeaders = FileToNtHeader(*pFileBuffer);
+	if (pNtHeaders == NULL)
+	{
+		printf("‰∏çÊòØÊ†áÂáÜPEÊñá‰ª∂!");
+		return 0;
+	}
+	pTextSectionHeader = LocateSectionBase(*pFileBuffer);
+	pSecondSectionHeader = (PIMAGE_SECTION_HEADER)((BYTE*)pTextSectionHeader + sizeof(IMAGE_SECTION_HEADER));
+	if (pTextSectionHeader == NULL)
+	{
+		printf("‰∏çÊòØÊ†áÂáÜPEÊñá‰ª∂!");
+		return 0;
+	}
+	//5‰∏∫ jmpÂéüoep ÁöÑÊåá‰ª§Èïø
+	if (ShellCodeLen > (pSecondSectionHeader->VirtualAddress - \
+		(pTextSectionHeader->Misc.VirtualSize + pTextSectionHeader->VirtualAddress)))
+	{
+		printf("‰ª£Á†ÅÂå∫Ââ©‰ΩôÁ©∫Èó¥‰∏çË∂≥");
+		return 0;
+	}
+	iShellCodeBaseAddress = pTextSectionHeader->Misc.VirtualSize + pTextSectionHeader->VirtualAddress;
+	//ËÆ°ÁÆóCallÂÅèÁßª
+	DWORD CallOffset = MESSAGE_BOX_ADDRESS - (iShellCodeBaseAddress + ShellCodeLen - 5 + pNtHeaders->OptionalHeader.ImageBase);
+	for (size_t i = 1; i <= 4; i++)
+	{
+		ShellCode[ShellCodeLen - 5 - i] = CallOffset >> ((4 - i) * 8) & 0xFF;
+	}
+
+
+	//ËÆ°ÁÆójmpÂÅèÁßª
+	OrigionalOEP = pNtHeaders->OptionalHeader.AddressOfEntryPoint;
+	Offset = OrigionalOEP - (iShellCodeBaseAddress + ShellCodeLen);
+	for (size_t i = 1; i <= 4; i++)
+	{
+		ShellCode[ShellCodeLen - i] = Offset >> ((4 - i) * 8) & 0xFF;
+	}
+
+
+	//ÁßªÂä®ShellCodeÂà∞‰ª£Á†ÅÁ©∫ÁôΩÂå∫
+	pImageBuffer = FileBufferToImageBuffer(*pFileBuffer);
+	memcpy((BYTE*)pImageBuffer + iShellCodeBaseAddress,
+		ShellCode,
+		ShellCodeLen);
+	//‰øÆÊîπOEP
+	PIMAGE_NT_HEADERS cao = FileToNtHeader(pImageBuffer);
+	cao->OptionalHeader.AddressOfEntryPoint = iShellCodeBaseAddress;
+	//‰øùÂ≠ò
+	free(*pFileBuffer);
+	*pFileBuffer = ImageBufferToFileBuffer(pImageBuffer);
+	return 1;
+}
+/*
+ÂáΩÊï∞ÂäüËÉΩÔºöÂú®‰ªª‰∏ÄËäÇÊ∑ªÂä†shellcode
+ÂèÇÊï∞ÔºöiSection:Ê∑ªÂä†ShellCodeÁöÑËäÇÁöÑÁºñÂè∑pFileBufferÔºöÊñá‰ª∂ÁºìÂÜ≤Âå∫ÊåáÈíà
+,ShellCode:16ËøõÂà∂shellcodeÔºåShellCodeLenÔºöShellCodeÈïøÂ∫¶
+ËøîÂõûÂÄºÔºöÊàêÂäüÊ∑ªÂä†ÂàôËøîÂõû1ÔºåÂê¶ÂàôËøîÂõû0
+Ê≥®ÊÑè:Ê≠§ÂáΩÊï∞ÂÅáÂÆöÁ¨¨‰∏Ä‰∏™ËäÇÂ∞±ÊòØ‰ª£Á†ÅÂå∫,‰∏îÊ≠§ÂáΩÊï∞‰ΩøÁî®Â§ö‰∏™ÂÖ∂‰ªñÂÜÖÁΩÆÂáΩÊï∞
+Âè¶Â§ñÈªòËÆ§shellcodeÊúÄÂêé‰∏∫E9 00 00 00 00 E8 00 00 00 00
+*/
+BOOL AddCodeToSection(DWORD iSection, LPVOID* pFileBuffer, BYTE* ShellCode, DWORD ShellCodeLen)
+{
+	PIMAGE_NT_HEADERS pNtHeaders = NULL;
+	PIMAGE_SECTION_HEADER pSectionHeader = NULL;
+	PIMAGE_SECTION_HEADER pSecondSectionHeader = NULL;
+	LPVOID pImageBuffer = NULL;
+	DWORD NumberOfSections = 0;
+	DWORD OrigionalOEP = 0;
+	int iShellCodeBaseAddress = 0;
+	long Offset = 0;
+	if (*pFileBuffer == NULL)
+	{
+		printf("AddCodeToSectionÂáΩÊï∞‰∏çÊé•ÂèóNULLÔºÅ");
+		return 0;
+	}
+	pNtHeaders = FileToNtHeader(*pFileBuffer);
+	if (pNtHeaders == NULL)
+	{
+		printf("‰∏çÊòØÊ†áÂáÜPEÊñá‰ª∂!");
+		return 0;
+	}
+	NumberOfSections = pNtHeaders->FileHeader.NumberOfSections;
+	if (iSection > NumberOfSections)
+	{
+		printf("Ë∂ÖÂá∫ËäÇÁöÑËåÉÂõ¥");
+		return 0;
+	}
+	pSectionHeader = iSection - 1 + LocateSectionBase(*pFileBuffer);
+	pSecondSectionHeader = (PIMAGE_SECTION_HEADER)((BYTE*)pSectionHeader + sizeof(IMAGE_SECTION_HEADER));
+	if (pSectionHeader == NULL)
+	{
+		printf("‰∏çÊòØÊ†áÂáÜPEÊñá‰ª∂!");
+		return 0;
+	}
+	if (iSection == NumberOfSections)
+	{
+		printf("‰∏çÊÉ≥ËÄÉËôëËøô‰∏ÄÂ±Ç");
+		return 0;
+	}
+	else if (ShellCodeLen > (pSecondSectionHeader->VirtualAddress - \
+		(pSectionHeader->Misc.VirtualSize + pSectionHeader->VirtualAddress)))
+	{
+		printf("ËØ•ËäÇÂâ©‰ΩôÁ©∫Èó¥‰∏çË∂≥");
+		return 0;
+	}
+	iShellCodeBaseAddress = pSectionHeader->Misc.VirtualSize + pSectionHeader->VirtualAddress;
+	//ËÆ°ÁÆóCallÂÅèÁßª
+	DWORD CallOffset = MESSAGE_BOX_ADDRESS - (iShellCodeBaseAddress + ShellCodeLen - 5 + pNtHeaders->OptionalHeader.ImageBase);
+	for (size_t i = 1; i <= 4; i++)
+	{
+		ShellCode[ShellCodeLen - 5 - i] = CallOffset >> ((4 - i) * 8) & 0xFF;
+	}
+
+
+	//ËÆ°ÁÆójmpÂÅèÁßª
+	OrigionalOEP = pNtHeaders->OptionalHeader.AddressOfEntryPoint;
+	Offset = OrigionalOEP - (iShellCodeBaseAddress + ShellCodeLen);
+	for (size_t i = 1; i <= 4; i++)
+	{
+		ShellCode[ShellCodeLen - i] = Offset >> ((4 - i) * 8) & 0xFF;
+	}
+
+	//ÁßªÂä®ShellCodeÂà∞‰ª£Á†ÅÁ©∫ÁôΩÂå∫
+	pImageBuffer = FileBufferToImageBuffer(*pFileBuffer);
+	memcpy((BYTE*)pImageBuffer + iShellCodeBaseAddress,
+		ShellCode,
+		ShellCodeLen);
+	//‰øÆÊîπËäÇÁöÑÂ±ûÊÄß
+	pSectionHeader->Characteristics |= (pSectionHeader - (iSection - 1))->Characteristics;
+	//‰øÆÊîπOEP
+	PIMAGE_NT_HEADERS pImageNtHeader = FileToNtHeader(pImageBuffer);
+	pImageNtHeader->OptionalHeader.AddressOfEntryPoint = iShellCodeBaseAddress;
+	//‰øùÂ≠ò
+	free(*pFileBuffer);
+	*pFileBuffer = ImageBufferToFileBuffer(pImageBuffer);
+	return 1;
+}
+/*
+ÂÜÖÁΩÆÁî®‰∫éËß£ÂÜ≥ÂØπÈΩêÈóÆÈ¢òÁöÑÂáΩÊï∞
+*/
+DWORD ALIGNING(DWORD size, DWORD aligning)
+{
+	return size % aligning ? (size / aligning + 1) * aligning : size;
+}
+
+
+
+/*
+ÂáΩÊï∞ÂäüËÉΩÔºöÂú®PEÊñá‰ª∂Êú´Â∞æÊ∑ªÂä†‰∏Ä‰∏™ËäÇ
+ÂèÇÊï∞ÔºöpFileBuffer:Êñá‰ª∂ÁºìÂÜ≤Âå∫ÊåáÈíàÔºå*SectionName:ËäÇÁöÑÂêçÂ≠óÔºàÂ≠óÁ¨¶‰∏≤È¶ñÂú∞ÂùÄÔºâ
+iVirtualSizeÔºöËäÇÁöÑVirtualSizeÔºåiCharacters:ËäÇÁöÑÂ±ûÊÄß
+ËøîÂõûÂÄºÔºöÊàêÂäüÊ∑ªÂä†ËøîÂõûÊ∑ªÂä†ÂêéPEÊñá‰ª∂ÁöÑÂ§ßÂ∞èÔºåÂê¶ÂàôËøîÂõû0
+Ê≥®ÊÑèÔºöËã•ËäÇË°®‰∏éËäÇ‰∏≠Èó¥Á©∫Èöô‰∏çË∂≥ÔºåÂàôËàçÂºÉDosStubÔºàÂ§¥Âêë‰∏äÁßªÔºâ
+Ê≠§ÂáΩÊï∞‰ΩøÁî®Â§ö‰∏™ÂÖ∂‰ªñÂÜÖÁΩÆÂáΩÊï∞,‰∏çËÄÉËôëÊó†ËäÇË°®ÁöÑÊÉÖÂÜµ
+*/
+DWORD AddSectionAtLast(LPVOID* pFileBuffer, CONST CHAR* SectionName, DWORD iVirtualSize, DWORD iCharacters)
+{
+	PIMAGE_NT_HEADERS pNtHeaders = NULL;
+	PIMAGE_SECTION_HEADER pSectionBase = NULL;
+	PIMAGE_SECTION_HEADER pNewSectionHeader = NULL;
+	DWORD FileAligning = 0;
+	DWORD SectionAligning = 0;
+	DWORD NumberOfSection = 0;
+	DWORD BlankArea = 0;
+	DWORD iReturnFileSize = 0;
+	if (*pFileBuffer == NULL)
+	{
+		printf("pFileBufferÂáΩÊï∞‰∏çÊé•ÂèóNULL!");
+		return 0;
+	}
+	pNtHeaders = FileToNtHeader(*pFileBuffer);
+	if (pNtHeaders == NULL)
+	{
+		printf("‰∏çÊòØÊ†áÂáÜPEÂ§¥ÔºÅ");
+		return 0;
+	}
+	FileAligning = pNtHeaders->OptionalHeader.FileAlignment;
+	SectionAligning = pNtHeaders->OptionalHeader.SectionAlignment;
+	NumberOfSection = pNtHeaders->FileHeader.NumberOfSections;
+	pSectionBase = LocateSectionBase(*pFileBuffer);
+	BlankArea = pNtHeaders->OptionalHeader.SizeOfHeaders
+		- (NumberOfSection) * sizeof(IMAGE_SECTION_HEADER);
+	if (BlankArea >= 2 * sizeof(IMAGE_SECTION_HEADER))
+	{
+		pNewSectionHeader = pSectionBase + NumberOfSection;
+
+		//ÈáçÁΩÆÂÜÖÂ≠òÁ©∫Èó¥
+		memset((void*)pNewSectionHeader, 0, sizeof(IMAGE_SECTION_HEADER));
+		//ÊîπÂêç
+		memcpy((VOID*)pNewSectionHeader, (VOID*)SectionName, 8);
+		//ÊîπiVirtualSize
+		pNewSectionHeader->Misc.VirtualSize = iVirtualSize;
+		//ÊîπvirtualAddress
+		pNewSectionHeader->VirtualAddress = (pNewSectionHeader - 1)->VirtualAddress\
+			+ ALIGNING((pNewSectionHeader - 1)->Misc.VirtualSize, SectionAligning);
+		//ÊîπSizeOfRawData
+		pNewSectionHeader->SizeOfRawData = ALIGNING(iVirtualSize, FileAligning);
+		//ÊîπPointToRawData
+		pNewSectionHeader->PointerToRawData = (pNewSectionHeader - 1)->PointerToRawData\
+			+ (pNewSectionHeader - 1)->SizeOfRawData;
+		//Êîπcharacters
+		pNewSectionHeader->Characteristics = iCharacters;
+		//ÊîπSizeOfImage
+		pNtHeaders->OptionalHeader.SizeOfImage += ALIGNING(iVirtualSize, SectionAligning);
+		//ÊîπNumberOfSection
+		pNtHeaders->FileHeader.NumberOfSections += 1;
+		//Â¢ûËäÇ
+		iReturnFileSize = (pNewSectionHeader - 1)->PointerToRawData\
+			+ (pNewSectionHeader - 1)->SizeOfRawData + pNewSectionHeader->SizeOfRawData;
+		realloc(*pFileBuffer, iReturnFileSize);
+		if (*pFileBuffer == NULL)
+		{
+			printf("ÂÜÖÂ≠òÈáçÊñ∞ÂàÜÈÖçÂ§±Ë¥•");
+			return 0;
+		}
+		//Â¢ûÂä†ÁöÑËäÇÂÖ®ÁΩÆCC
+		//memset((void**)(*pFileBuffer) + pNewSectionHeader->PointerToRawData, 0xCC, pNewSectionHeader->SizeOfRawData);
+		return iReturnFileSize;
+	}
+	else
+	{
+		printf("Á≠â‰∏Ä‰∏ãÂÜçÂÜô");
+		return 0;
+	}
 }
